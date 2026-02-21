@@ -63,4 +63,7 @@ struct Event {
     std::optional<SceneLoadedEvent> sceneLoaded;
 };
 
+// Build a small list of fake events for local testing.
+std::vector<Event> BuildFakeEvents();
+
 } // namespace mcx
