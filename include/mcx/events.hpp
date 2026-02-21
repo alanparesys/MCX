@@ -67,4 +67,7 @@ struct Event {
 // Build a small list of fake events for local testing.
 std::vector<Event> BuildFakeEvents();
 
+// Print a short log line for an event (for demo runs).
+void PrintEvent(const Event& event);
+
 } // namespace mcx
