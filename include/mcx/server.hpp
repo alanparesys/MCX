@@ -1,0 +1,28 @@
+#pragma once
+
+#include <string>
+
+#include "mcx/actions.hpp"
+#include "mcx/events.hpp"
+
+namespace mcx {
+
+struct Config {
+    std::string backendEndpoint; // optional external backend; may be empty
+};
+
+class Server {
+public:
+    explicit Server(Config config = {});
+
+    void start();
+
+    // Handle an incoming event from the Minecraft server and return actions
+    // MCX would like the server to perform.
+    [[nodiscard]] ActionList handleEvent(const Event& event);
+
+private:
+    Config config_;
+};
+
+} // namespace mcx
