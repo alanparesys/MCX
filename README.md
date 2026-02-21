@@ -36,3 +36,28 @@ MCX is an open-source platform that aims to extend Minecraft without modifying t
 - A strong focus on documentation and openness so that contributors can understand, extend, and maintain MCX over time.
 
 MCX is designed to be a project where experimentation, AI, and Minecraft meet. It does not aim to replace the original game, but to give creators a modern toolbox to build new experiences on top of it.
+
+## Roadmap
+
+### V1 — Server prototype (current focus)
+
+- [ ] Local test server dedicated to MCX
+- [ ] MCX server-side component that can:
+  - [ ] listen to player join/quit/chat/command events
+  - [ ] send selected events to an AI backend via OpenClaw
+  - [ ] apply simple actions in response (messages, logs, basic rules)
+
+### V2 — MCX runtime (preparing Lua scripting)
+
+- [ ] Define the MCX event model (what events exist and how they are represented)
+- [ ] Define the MCX action API (sendMessage, broadcast, teleport, loadScene, etc.)
+- [ ] Choose and prototype the runtime stack for scripting (for example Java/Node/C++ + Lua)
+- [ ] Expose a minimal MCX scripting surface so that a script can react to events and call actions
+
+### V3 — More autonomous MCX layer
+
+- [ ] Design a proxy/server layer that can speak the Minecraft protocol directly
+- [ ] Design the asset pipeline (resource packs, models, maps) that MCX can orchestrate
+- [ ] Draft the MCX launcher concept (responsible for updates and connecting players to MCX servers)
+
+This roadmap is intentionally high level. The goal is not to lock MCX into a fixed path, but to keep a clear direction while allowing experimentation and community input.
