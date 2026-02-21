@@ -1,14 +1,17 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "mcx/actions.hpp"
 #include "mcx/events.hpp"
+#include "mcx/script_runtime.hpp"
 
 namespace mcx {
 
 struct Config {
     std::string backendEndpoint; // optional external backend; may be empty
+    std::string scriptRoot;      // where scripts are loaded from
 };
 
 class Server {
@@ -23,6 +26,7 @@ public:
 
 private:
     Config config_;
+    std::unique_ptr<ScriptRuntime> scriptRuntime_;
 };
 
 } // namespace mcx
