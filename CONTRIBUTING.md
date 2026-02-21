@@ -34,7 +34,11 @@ For early stages of the project:
 
 ## Code style and languages
 
-The exact implementation stack is still being defined (see the roadmap), but some general principles apply:
+The exact implementation stack is still being defined (see the roadmap). The long-term goal is a **C++ core** for
+performance, with Lua as the primary scripting language exposed to creators. Early prototypes may use other languages
+(such as TypeScript) to validate ideas and APIs before committing to a C++ implementation.
+
+Some general principles apply:
 
 - Keep things simple and readable.
 - Favor clear naming over clever tricks.
