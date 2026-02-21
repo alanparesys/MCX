@@ -8,6 +8,7 @@ add_library(mcx_core
     src/server.cpp
     src/fake_event_source.cpp
     src/script_runtime_dummy.cpp
+    src/event_utils.cpp
 )
 
 target_include_directories(mcx_core PUBLIC include)

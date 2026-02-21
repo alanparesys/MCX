@@ -6,12 +6,15 @@ int main() {
     mcx::Server server{config};
     server.Start();
 
-    // Demo: feed a few fake events into the core so we can see basic
-    // behavior without a real Minecraft server yet.
+    std::cout << "[MCX] Demo run starting" << std::endl;
+
     const auto events = mcx::BuildFakeEvents();
     for (const auto& event : events) {
         server.HandleEvent(event);
+        std::cout << "[MCX] ---" << std::endl;
     }
+
+    std::cout << "[MCX] Demo run complete" << std::endl;
 
     return 0;
 }
