@@ -17,3 +17,9 @@ add_executable(mcx
 )
 
 target_link_libraries(mcx PRIVATE mcx_core)
+
+add_executable(mcx_tests
+    tests/test_core.cpp
+)
+
+target_link_libraries(mcx_tests PRIVATE mcx_core)
