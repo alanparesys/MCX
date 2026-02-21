@@ -8,47 +8,47 @@
 
 namespace mcx {
 
-enum class ActionKind {
-    SendMessage,
-    Broadcast,
-    SendTitle,
-    Teleport,
-    SetSpawn,
-    LoadScene,
+enum class ACTION_KIND {
+    SEND_MESSAGE,
+    BROADCAST,
+    SEND_TITLE,
+    TELEPORT,
+    SET_SPAWN,
+    LOAD_SCENE,
 };
 
 struct SendMessageAction {
-    ActionKind kind{ActionKind::SendMessage};
+    ACTION_KIND kind{ACTION_KIND::SEND_MESSAGE};
     std::string playerId;
     std::string text;
 };
 
 struct BroadcastAction {
-    ActionKind kind{ActionKind::Broadcast};
+    ACTION_KIND kind{ACTION_KIND::BROADCAST};
     std::string text;
 };
 
 struct SendTitleAction {
-    ActionKind kind{ActionKind::SendTitle};
+    ACTION_KIND kind{ACTION_KIND::SEND_TITLE};
     std::string playerId;
     std::string title;
     std::string subtitle;
 };
 
 struct TeleportAction {
-    ActionKind kind{ActionKind::Teleport};
+    ACTION_KIND kind{ACTION_KIND::TELEPORT};
     std::string playerId;
     Vec3 position;
 };
 
 struct SetSpawnAction {
-    ActionKind kind{ActionKind::SetSpawn};
+    ACTION_KIND kind{ACTION_KIND::SET_SPAWN};
     std::string playerId;
     Vec3 position;
 };
 
 struct LoadSceneAction {
-    ActionKind kind{ActionKind::LoadScene};
+    ACTION_KIND kind{ACTION_KIND::LOAD_SCENE};
     std::string scene;
 };
 

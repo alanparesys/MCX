@@ -17,45 +17,45 @@ struct Player {
     std::optional<Vec3> position;
 };
 
-enum class EventType {
-    PlayerJoin,
-    PlayerQuit,
-    Chat,
-    Command,
-    SceneLoaded,
+enum class EVENT_TYPE {
+    PLAYER_JOIN,
+    PLAYER_QUIT,
+    CHAT,
+    COMMAND,
+    SCENE_LOADED,
 };
 
 struct PlayerJoinEvent {
-    EventType type{EventType::PlayerJoin};
+    EVENT_TYPE type{EVENT_TYPE::PLAYER_JOIN};
     Player player;
 };
 
 struct PlayerQuitEvent {
-    EventType type{EventType::PlayerQuit};
+    EVENT_TYPE type{EVENT_TYPE::PLAYER_QUIT};
     Player player;
 };
 
 struct ChatEvent {
-    EventType type{EventType::Chat};
+    EVENT_TYPE type{EVENT_TYPE::CHAT};
     Player player;
     std::string message;
 };
 
 struct CommandEvent {
-    EventType type{EventType::Command};
+    EVENT_TYPE type{EVENT_TYPE::COMMAND};
     std::optional<Player> player; // console commands may not have a player
     std::string command;
     std::vector<std::string> args;
 };
 
 struct SceneLoadedEvent {
-    EventType type{EventType::SceneLoaded};
+    EVENT_TYPE type{EVENT_TYPE::SCENE_LOADED};
     std::string scene;
 };
 
 // Simple tagged variant-style container for early prototypes.
 struct Event {
-    EventType type{EventType::PlayerJoin};
+    EVENT_TYPE type{EVENT_TYPE::PLAYER_JOIN};
     std::optional<PlayerJoinEvent> playerJoin;
     std::optional<PlayerQuitEvent> playerQuit;
     std::optional<ChatEvent> chat;

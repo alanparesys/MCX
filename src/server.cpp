@@ -7,7 +7,7 @@ namespace mcx {
 Server::Server(Config config)
     : config_(std::move(config)) {}
 
-void Server::start() {
+void Server::Start() {
     std::cout << "[MCX] Starting MCX C++ core prototype..." << std::endl;
 
     if (!config_.backendEndpoint.empty()) {
@@ -19,22 +19,22 @@ void Server::start() {
     // In V1 this is where we will plug in the Minecraft server event source.
 }
 
-ActionList Server::handleEvent(const Event& event) {
+ActionList Server::HandleEvent(const Event& event) {
     // For now, just log the event type and return no actions.
     switch (event.type) {
-        case EventType::PlayerJoin:
+        case EVENT_TYPE::PLAYER_JOIN:
             std::cout << "[MCX] Event: player_join" << std::endl;
             break;
-        case EventType::PlayerQuit:
+        case EVENT_TYPE::PLAYER_QUIT:
             std::cout << "[MCX] Event: player_quit" << std::endl;
             break;
-        case EventType::Chat:
+        case EVENT_TYPE::CHAT:
             std::cout << "[MCX] Event: chat" << std::endl;
             break;
-        case EventType::Command:
+        case EVENT_TYPE::COMMAND:
             std::cout << "[MCX] Event: command" << std::endl;
             break;
-        case EventType::SceneLoaded:
+        case EVENT_TYPE::SCENE_LOADED:
             std::cout << "[MCX] Event: scene_loaded" << std::endl;
             break;
     }

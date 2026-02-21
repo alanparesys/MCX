@@ -3,6 +3,6 @@
 int main() {
     mcx::Config config{};
     mcx::Server server{config};
-    server.start();
+    server.Start();
     return 0;
 }

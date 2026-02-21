@@ -15,11 +15,11 @@ class Server {
 public:
     explicit Server(Config config = {});
 
-    void start();
+    void Start();
 
     // Handle an incoming event from the Minecraft server and return actions
     // MCX would like the server to perform.
-    [[nodiscard]] ActionList handleEvent(const Event& event);
+    [[nodiscard]] ActionList HandleEvent(const Event& event);
 
 private:
     Config config_;
