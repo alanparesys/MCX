@@ -7,7 +7,8 @@ into a serious, community-driven platform.
 
 1. **Read the README** to understand the high-level vision and roadmap.
 2. Check the `docs/` directory for design documents such as the Lua API draft.
-3. Look at the open issues, especially those that describe design work or small, well-scoped tasks.
+3. For C++ core work, see `docs/cpp-contributing.md`.
+4. Look at the open issues, especially those that describe design work or small, well-scoped tasks.
 
 For now, most contributions will be:
 
