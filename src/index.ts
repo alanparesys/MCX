@@ -5,7 +5,7 @@ import type { MCXEvent } from "./core/events.js";
 import type { MCXAction } from "./core/actions.js";
 
 export interface MCXConfig {
-  openclawEndpoint?: string;
+  backendEndpoint?: string;
 }
 
 export class MCXServer {
@@ -13,10 +13,10 @@ export class MCXServer {
 
   start() {
     console.log("[MCX] Starting MCX server prototype...");
-    if (this.config.openclawEndpoint) {
-      console.log(`[MCX] OpenClaw endpoint: ${this.config.openclawEndpoint}`);
+    if (this.config.backendEndpoint) {
+      console.log(`[MCX] External backend endpoint: ${this.config.backendEndpoint}`);
     } else {
-      console.log("[MCX] No OpenClaw endpoint configured yet.");
+      console.log("[MCX] No external backend configured yet.");
     }
     // In V1 this is where we will plug in the Minecraft server event source.
   }

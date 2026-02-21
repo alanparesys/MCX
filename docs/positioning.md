@@ -17,10 +17,9 @@ This document clarifies what MCX is, what it is not, and how it positions itself
     behaviors as scripts.
   - The goal is to let people describe experiences in code and configuration, not by manually editing worlds forever.
 
-- **AI-aware by design.**
-  - MCX integrates with OpenClaw from the start.
-  - AI is not an afterthought or a plugin: it is part of how MCX helps with moderation, content generation, and
-    scenario design.
+- **Scriptable and automation-friendly by design.**
+  - MCX is designed to integrate with external services and tooling when needed.
+  - Automation, moderation, and scenario design are driven by scripts and clear server-side APIs.
 
 - **Open source and community-oriented.**
   - MCX is intended to be fully open source and free to use.
@@ -49,15 +48,15 @@ This document clarifies what MCX is, what it is not, and how it positions itself
 - **Tool builders** who want to integrate Minecraft with other systems (Discord, web dashboards, analytics, etc.) and
   need a clear API.
 
-## Why AI integration matters
+## Why integrations matter
 
-AI is not just a buzzword in MCX; it is a practical tool for:
+External services and tools are not just a buzzword in MCX; they are practical options for:
 
 - **Moderation and logging** – helping admins understand what is happening on the server and react faster.
-- **Scenario and quest design** – generating ideas, descriptions, and small building blocks for scenes.
+- **Scenario and quest design** – generating ideas, descriptions, and building blocks for scenes.
 - **Automation** – reacting to patterns in gameplay, server load, or player behavior.
 
-OpenClaw acts as a multi-agent backend that MCX can send events to and receive structured suggestions or actions from.
+MCX is built so that it can send events to other systems and receive structured suggestions or actions in return.
 
 ## Long-term vision in one paragraph
 

@@ -1,6 +1,6 @@
 # MCX
 
-MCX is an open-source platform that aims to extend Minecraft without modifying the original game client. It focuses on building a modern, scriptable layer around Minecraft servers, with deep integration of AI through OpenClaw.
+MCX is an open-source platform that aims to extend Minecraft without modifying the original game client. It focuses on building a modern, scriptable layer around Minecraft servers, with a focus on clear server-side scripting and experience design.
 
 ## Vision
 
@@ -12,17 +12,17 @@ MCX is an open-source platform that aims to extend Minecraft without modifying t
 
 - **Server-side first**: MCX runs alongside or inside existing Minecraft server stacks (for example via plugins or a network proxy).
 - **Scenes and experiences**: instead of editing raw world data manually, MCX exposes higher-level concepts like scenes, characters, and rules.
-- **AI-assisted workflows**: MCX connects to OpenClaw so that creators and admins can use an AI assistant to:
-  - generate or tweak scenes, events, and quests,
-  - assist with moderation and logging,
-  - help design and test new experiences.
+- **Scriptable workflows**: MCX is designed to expose a clear scripting API so that creators and admins can:
+  - generate or tweak scenes, events, and quests through code,
+  - build custom moderation and logging workflows,
+  - design and test new experiences using scripts and configuration.
 
 ## First prototype (v1 direction)
 
 - A server-side component (plugin or companion service) that can:
   - receive events from a Minecraft server (joins, chat, commands, world events),
   - expose a simple API for scenes (load, save, switch) and characters,
-  - talk to an MCX backend that is powered by OpenClaw.
+  - talk to a backend that can make decisions and return actions.
 - Basic integrations:
   - command interface for admins (in-game or via Discord) to control MCX,
   - a minimal scene system that can load predefined configurations (maps, rules, roles).
@@ -44,7 +44,7 @@ MCX is designed to be a project where experimentation, AI, and Minecraft meet. I
 - [ ] Local test server dedicated to MCX
 - [ ] MCX server-side component that can:
   - [ ] listen to player join/quit/chat/command events
-  - [ ] send selected events to an AI backend via OpenClaw
+  - [ ] send selected events to a backend that can make decisions (for example a separate service)
   - [ ] apply simple actions in response (messages, logs, basic rules)
 
 ### V2 — MCX runtime (preparing Lua scripting)

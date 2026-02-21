@@ -87,7 +87,7 @@ Scenes are also a useful hook for AI integration:
 - An AI assistant can help design or adjust scenes:
   - propose rules and roles for a given theme,
   - suggest spawn locations or basic flows.
-- MCX can send scene context to OpenClaw when asking for help:
+- MCX can send scene context to an external service when asking for help:
 
 ```json
 {
@@ -98,7 +98,7 @@ Scenes are also a useful hook for AI integration:
 }
 ```
 
-This allows OpenClaw to provide answers and actions that are aware of the current experience, not just raw chat.
+This allows external tooling to provide answers and actions that are aware of the current experience, not just raw chat.
 
 ## Summary
 

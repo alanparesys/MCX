@@ -1,7 +1,7 @@
 # MCX Architecture – V1 Prototype
 
 > This document describes a first-pass architecture for MCX V1. The goal is to capture how MCX fits between a
-> Minecraft server and an AI backend (OpenClaw) for the initial prototype.
+> Minecraft server and an optional external backend for the initial prototype.
 
 ## High-level picture
 
@@ -9,13 +9,13 @@ For V1, MCX is **not** a replacement for the Minecraft server. Instead, it runs 
 observes/controls certain aspects of it.
 
 ```text
-Minecraft client(s)  <---->  Minecraft server (Paper/Spigot)  <---->  MCX component  <---->  OpenClaw
+Minecraft client(s)  <---->  Minecraft server (Paper/Spigot)  <---->  MCX component  <---->  External backend (optional)
 ```
 
 - **Minecraft client(s)**: standard vanilla clients used by players.
 - **Minecraft server**: a test server instance (for example Paper) that hosts the world.
 - **MCX component**: the first MCX piece we will implement, running on the same machine as the server.
-- **OpenClaw**: an AI backend that can receive events and respond with suggestions or actions.
+- **External backend (optional)**: a service that can receive events and respond with suggestions or actions (for example, for moderation, logging, or automation).
 
 ## MCX component responsibilities (V1)
 
@@ -25,8 +25,8 @@ The MCX component for V1 should:
   - player join / quit
   - chat messages
   - commands
-- Forward selected events to OpenClaw in a simple, well-defined format.
-- Apply **simple actions** in response to OpenClaw outputs, for example:
+- Forward selected events to an external backend in a simple, well-defined format.
+- Apply **simple actions** in response to the backend outputs, for example:
   - sending messages to players
   - broadcasting messages to the server
   - logging information for the admin
@@ -73,12 +73,12 @@ Two main implementation options exist for V1:
 For V1 we can choose whichever path is easier to iterate on given existing tooling and time constraints. The important
 part is that the **MCX internal model of events and actions** matches what we defined in `docs/lua-api-design.md`.
 
-## Communication between MCX and OpenClaw
+## Communication between MCX and external backends
 
-For the first prototype, MCX does not need a complex protocol to talk to OpenClaw. A simple request/response pattern is
+For the first prototype, MCX does not need a complex protocol to talk to an external backend. A simple request/response pattern is
 sufficient:
 
-- MCX sends an event payload to OpenClaw (for example via HTTP or websocket), including:
+- MCX sends an event payload to the backend (for example via HTTP or websocket), including:
   - event type (`player_join`, `chat`, etc.),
   - relevant fields (player, message, scene, etc.),
   - optional context.
@@ -100,7 +100,7 @@ Example (conceptual, not final):
 }
 ```
 
-OpenClaw could return:
+The backend could return:
 
 ```json
 {
@@ -119,7 +119,7 @@ loop is stable.
 In V1, MCX may not execute Lua scripts yet. Instead, it can:
 
 - observe events,
-- optionally call OpenClaw,
+- optionally call an external backend,
 - perform hard-coded actions.
 
 However, the architecture should already anticipate that:
