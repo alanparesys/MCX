@@ -1,4 +1,5 @@
 #include "mcx/server.hpp"
+#include "mcx/log.hpp"
 
 #include <iostream>
 
