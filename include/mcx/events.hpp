@@ -28,30 +28,25 @@ enum class EVENT_TYPE {
 };
 
 struct PlayerJoinEvent {
-    EVENT_TYPE type{EVENT_TYPE::PLAYER_JOIN};
     Player player;
 };
 
 struct PlayerQuitEvent {
-    EVENT_TYPE type{EVENT_TYPE::PLAYER_QUIT};
     Player player;
 };
 
 struct ChatEvent {
-    EVENT_TYPE type{EVENT_TYPE::CHAT};
     Player player;
     std::string message;
 };
 
 struct CommandEvent {
-    EVENT_TYPE type{EVENT_TYPE::COMMAND};
-    std::optional<Player> player; // console commands may not have a player
+    std::optional<Player> player;
     std::string command;
     std::vector<std::string> args;
 };
 
 struct SceneLoadedEvent {
-    EVENT_TYPE type{EVENT_TYPE::SCENE_LOADED};
     std::string scene;
 };
 
