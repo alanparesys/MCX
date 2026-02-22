@@ -26,6 +26,11 @@ void Server::Start() {
                   << std::endl;
     }
 
+    std::cout << "[MCX] Config: demoMode="
+              << (config_.demoMode ? "true" : "false")
+              << ", maxPlayers=" << config_.maxPlayers
+              << std::endl;
+
     scriptRuntime_->LoadScripts(config_.scriptRoot);
     // In V1 this is where we will plug in the Minecraft server event source.
 }

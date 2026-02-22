@@ -8,6 +8,9 @@ namespace {
 
 void RunDemo() {
     mcx::Config config{};
+    config.demoMode = true;
+    config.maxPlayers = 2;
+
     mcx::Server server{config};
     server.Start();
 
