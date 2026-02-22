@@ -14,6 +14,12 @@ add_library(mcx_core
     src/core/log.cpp
     src/core/scene_manager.cpp
     src/core/player_registry.cpp
+    src/core/scheduler.cpp
+    src/core/command_parser.cpp
+    src/core/signal_handler.cpp
+    src/core/config_validator.cpp
+    src/core/file_logger.cpp
+    src/core/permissions.cpp
     src/integration/fake_event_source.cpp
     src/integration/minecraft_bridge_dummy.cpp
 )

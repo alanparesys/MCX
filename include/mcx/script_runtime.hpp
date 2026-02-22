@@ -21,4 +21,6 @@ public:
     [[nodiscard]] ActionList HandleEvent(const Event& event) override;
 };
 
+std::unique_ptr<ScriptRuntime> CreateHardcodedRuntime();
+
 } // namespace mcx

@@ -18,6 +18,9 @@ struct Config {
 
 class SceneManager;
 class PlayerRegistry;
+class Scheduler;
+struct Metrics;
+class PermissionRegistry;
 
 class Server {
 public:
@@ -25,21 +28,22 @@ public:
 
     void Start();
 
-    // Handle an incoming event from the Minecraft server and return actions
-    // MCX would like the server to perform.
     [[nodiscard]] ActionList HandleEvent(const Event& event);
 
-    // Returns the scene manager for applying actions.
     [[nodiscard]] SceneManager& GetSceneManager();
-
-    // Returns the player registry for tracking connected players.
     [[nodiscard]] PlayerRegistry& GetPlayerRegistry();
+    [[nodiscard]] Scheduler& GetScheduler();
+    [[nodiscard]] Metrics& GetMetrics();
+    [[nodiscard]] PermissionRegistry& GetPermissions();
 
 private:
     Config config_;
     std::unique_ptr<ScriptRuntime> scriptRuntime_;
     std::unique_ptr<SceneManager> sceneManager_;
     std::unique_ptr<PlayerRegistry> playerRegistry_;
+    std::unique_ptr<Scheduler> scheduler_;
+    std::unique_ptr<Metrics> metrics_;
+    std::unique_ptr<PermissionRegistry> permissions_;
 };
 
 } // namespace mcx

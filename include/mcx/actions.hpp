@@ -63,4 +63,7 @@ using Action = std::variant<
 
 using ActionList = std::vector<Action>;
 
+// For early prototypes, apply actions by logging them.
+void ApplyActionsToLog(const ActionList& actions);
+
 } // namespace mcx

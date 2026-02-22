@@ -24,23 +24,23 @@ void ActionApplier::Apply(const ActionList& actions) {
                 if constexpr (std::is_same_v<T,
                               SendMessageAction>) {
                     log::Info("Action: sendMessage -> playerId="
-                              + concreteAction.playerId
+                              + std::string(concreteAction.playerId)
                               + ", text="
-                              + concreteAction.text);
+                              + std::string(concreteAction.text));
                 } else if constexpr (std::is_same_v<T,
                                      BroadcastAction>) {
                     log::Info("Action: broadcast -> text="
-                              + concreteAction.text);
+                              + std::string(concreteAction.text));
                 } else if constexpr (std::is_same_v<T,
                                      SendTitleAction>) {
                     log::Info("Action: sendTitle -> playerId="
-                              + concreteAction.playerId
+                              + std::string(concreteAction.playerId)
                               + ", title="
-                              + concreteAction.title);
+                              + std::string(concreteAction.title));
                 } else if constexpr (std::is_same_v<T,
                                      TeleportAction>) {
                     log::Info("Action: teleport -> playerId="
-                              + concreteAction.playerId
+                              + std::string(concreteAction.playerId)
                               + ", pos=("
                               + std::to_string(
                                     concreteAction.position.x)
@@ -54,7 +54,7 @@ void ActionApplier::Apply(const ActionList& actions) {
                 } else if constexpr (std::is_same_v<T,
                                      SetSpawnAction>) {
                     log::Info("Action: setSpawn -> playerId="
-                              + concreteAction.playerId
+                              + std::string(concreteAction.playerId)
                               + ", pos=("
                               + std::to_string(
                                     concreteAction.position.x)

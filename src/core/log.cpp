@@ -1,6 +1,7 @@
 #include "mcx/log.hpp"
 
 #include <iostream>
+#include <string>
 
 namespace mcx::log {
 
