@@ -4,16 +4,16 @@
 
 namespace mcx::log {
 
-void Info(const std::string& message) {
-    std::cout << "[MCX] " << message << std::endl;
+void Info(std::string_view message) {
+    std::cout << "[MCX] " << message << '\n';
 }
 
-void Warn(const std::string& message) {
-    std::cout << "[MCX][WARN] " << message << std::endl;
+void Warn(std::string_view message) {
+    std::cout << "[MCX][WARN] " << message << '\n';
 }
 
-void Error(const std::string& message) {
-    std::cerr << "[MCX][ERROR] " << message << std::endl;
+void Error(std::string_view message) {
+    std::cerr << "[MCX][ERROR] " << message << '\n';
 }
 
 } // namespace mcx::log
