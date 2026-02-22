@@ -1,5 +1,6 @@
 #include "mcx/server.hpp"
 #include "mcx/events.hpp"
+#include "mcx/action_applier.hpp"
 
 #include <iostream>
 #include <string>
@@ -14,11 +15,14 @@ void RunDemo() {
     mcx::Server server{config};
     server.Start();
 
+    mcx::ActionApplier applier{server.GetSceneManager()};
+
     std::cout << "[MCX] Demo run starting" << std::endl;
 
     const auto events = mcx::BuildFakeEvents();
     for (const auto& event : events) {
-        server.HandleEvent(event);
+        auto actions = server.HandleEvent(event);
+        applier.Apply(actions);
         std::cout << "[MCX] ---" << std::endl;
     }
 

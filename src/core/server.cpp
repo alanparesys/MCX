@@ -1,5 +1,6 @@
 #include "mcx/server.hpp"
 #include "mcx/log.hpp"
+#include "mcx/scene_manager.hpp"
 
 #include <iostream>
 
@@ -12,32 +13,37 @@ Server::Server(Config config)
     }
 
     scriptRuntime_ = std::make_unique<DummyScriptRuntime>();
+    sceneManager_ = std::make_unique<SceneManager>();
 }
 
 void Server::Start() {
-    std::cout << "[MCX] Starting MCX C++ core prototype..."
-              << std::endl;
+    log::Info("Starting MCX C++ core prototype...");
 
     if (!config_.backendEndpoint.empty()) {
-        std::cout << "[MCX] External backend endpoint: "
-                  << config_.backendEndpoint << std::endl;
+        log::Info("External backend endpoint: "
+                  + config_.backendEndpoint);
     } else {
-        std::cout << "[MCX] No external backend configured yet."
-                  << std::endl;
+        log::Info("No external backend configured yet.");
     }
 
-    std::cout << "[MCX] Config: demoMode="
-              << (config_.demoMode ? "true" : "false")
-              << ", maxPlayers=" << config_.maxPlayers
-              << std::endl;
+    log::Info("Config: demoMode="
+              + std::string(config_.demoMode ? "true" : "false")
+              + ", maxPlayers="
+              + std::to_string(config_.maxPlayers));
 
     scriptRuntime_->LoadScripts(config_.scriptRoot);
-    // In V1 this is where we will plug in the Minecraft server event source.
+
+    log::Info("Server started. Scene: "
+              + sceneManager_->GetCurrentScene());
 }
 
 ActionList Server::HandleEvent(const Event& event) {
     PrintEvent(event);
     return scriptRuntime_->HandleEvent(event);
+}
+
+SceneManager& Server::GetSceneManager() {
+    return *sceneManager_;
 }
 
 } // namespace mcx
