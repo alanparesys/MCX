@@ -16,6 +16,9 @@ struct Config {
     bool demoMode{true};         // whether MCX is running in demo mode
 };
 
+class SceneManager;
+class PlayerRegistry;
+
 class Server {
 public:
     explicit Server(Config config = {});
@@ -26,9 +29,17 @@ public:
     // MCX would like the server to perform.
     [[nodiscard]] ActionList HandleEvent(const Event& event);
 
+    // Returns the scene manager for applying actions.
+    [[nodiscard]] SceneManager& GetSceneManager();
+
+    // Returns the player registry for tracking connected players.
+    [[nodiscard]] PlayerRegistry& GetPlayerRegistry();
+
 private:
     Config config_;
     std::unique_ptr<ScriptRuntime> scriptRuntime_;
+    std::unique_ptr<SceneManager> sceneManager_;
+    std::unique_ptr<PlayerRegistry> playerRegistry_;
 };
 
 } // namespace mcx
