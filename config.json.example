@@ -1,0 +1,6 @@
+{
+  "backendEndpoint": "",
+  "scriptRoot": "scripts",
+  "maxPlayers": 10,
+  "demoMode": true
+}
