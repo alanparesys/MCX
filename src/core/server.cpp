@@ -9,9 +9,6 @@ namespace mcx {
 
 Server::Server(Config config)
     : config_(std::move(config)) {
-    if (config_.scriptRoot.empty()) {
-        config_.scriptRoot = "scripts";
-    }
 
     scriptRuntime_ = std::make_unique<DummyScriptRuntime>();
     sceneManager_ = std::make_unique<SceneManager>();

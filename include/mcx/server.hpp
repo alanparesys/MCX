@@ -10,10 +10,10 @@
 namespace mcx {
 
 struct Config {
-    std::string backendEndpoint; // optional external backend; may be empty
-    std::string scriptRoot;      // where scripts are loaded from
-    int maxPlayers{0};           // optional hint for future use
-    bool demoMode{true};         // whether MCX is running in demo mode
+    std::string backendEndpoint{};
+    std::string scriptRoot{"scripts"};
+    int maxPlayers{0};
+    bool demoMode{true};
 };
 
 class SceneManager;
