@@ -2,6 +2,8 @@
 #include "mcx/scene_manager.hpp"
 #include "mcx/log.hpp"
 
+#include <variant>
+
 namespace mcx {
 
 ActionApplier::ActionApplier(SceneManager& sceneManager)
