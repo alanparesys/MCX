@@ -19,14 +19,23 @@ std::vector<Event> BuildFakeEvents() {
     join.playerJoin = joinEvent;
     events.push_back(join);
 
-    ChatEvent chatEvent{};
-    chatEvent.player = player;
-    chatEvent.message = "!hello";
+    ChatEvent chatHello{};
+    chatHello.player = player;
+    chatHello.message = "!hello";
 
-    Event chat{};
-    chat.type = EVENT_TYPE::CHAT;
-    chat.chat = chatEvent;
-    events.push_back(chat);
+    Event chatHelloEvent{};
+    chatHelloEvent.type = EVENT_TYPE::CHAT;
+    chatHelloEvent.chat = chatHello;
+    events.push_back(chatHelloEvent);
+
+    ChatEvent chatScene{};
+    chatScene.player = player;
+    chatScene.message = "!scene test";
+
+    Event chatSceneEvent{};
+    chatSceneEvent.type = EVENT_TYPE::CHAT;
+    chatSceneEvent.chat = chatScene;
+    events.push_back(chatSceneEvent);
 
     CommandEvent commandEvent{};
     commandEvent.player = player;
