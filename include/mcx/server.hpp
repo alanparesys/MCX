@@ -12,7 +12,12 @@ namespace mcx {
 struct Config {
     std::string backendEndpoint; // optional external backend; may be empty
     std::string scriptRoot;      // where scripts are loaded from
+    int maxPlayers{0};           // optional hint for future use
+    bool demoMode{true};         // whether MCX is running in demo mode
 };
+
+class SceneManager;
+class PlayerRegistry;
 
 class Server {
 public:
@@ -24,9 +29,17 @@ public:
     // MCX would like the server to perform.
     [[nodiscard]] ActionList HandleEvent(const Event& event);
 
+    // Returns the scene manager for applying actions.
+    [[nodiscard]] SceneManager& GetSceneManager();
+
+    // Returns the player registry for tracking connected players.
+    [[nodiscard]] PlayerRegistry& GetPlayerRegistry();
+
 private:
     Config config_;
     std::unique_ptr<ScriptRuntime> scriptRuntime_;
+    std::unique_ptr<SceneManager> sceneManager_;
+    std::unique_ptr<PlayerRegistry> playerRegistry_;
 };
 
 } // namespace mcx
