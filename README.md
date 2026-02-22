@@ -30,14 +30,70 @@ Minecraft C++ Experience Layer. A server-side scripting platform for Minecraft t
 Core (`src/core/`): Server, Event/Action system, ScriptRuntime interface, SceneManager, PlayerRegistry
 Integration (`src/integration/`): Minecraft bridge, fake event source for testing
 
-## Getting Started
+## C++ Build & Development
 
-### Build
+### Requirements
+
+- C++20 compatible compiler
+- CMake 3.16 or higher
+
+**Supported compilers:**
+- GCC 10+
+- Clang 12+
+- MSVC 2019+
+
+### Dependencies
+
+Header-only dependencies included in `third_party/`:
+- nlohmann/json (v3.11.3)
+
+No external package manager required.
+
+### Build Steps (Linux)
 
 ```bash
+# Configure Release build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+# Build
+cmake --build build --parallel
+
+# Run
+cmake --build build --target mcx
+```
+
+### Build Steps (Windows)
+
+```powershell
+# Configure Release build (Visual Studio)
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+
+# Build
+cmake --build build --config Release
+```
+
+### Debug Build
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+```
+
+### Clean Rebuild
+
+```bash
+rm -rf build
 cmake -S . -B build
 cmake --build build
 ```
+
+### Build Targets
+
+| Target | Description |
+|--------|-------------|
+| `mcx` | Main server executable |
+| `mcx_tests` | Unit test executable |
+| `mcx_core` | Static library (core components) |
 
 ### Run
 
@@ -45,6 +101,13 @@ cmake --build build
 ./build/mcx --demo        # Run fake event demo
 ./build/mcx --version     # Show version
 ```
+
+### Compile Flags (Applied)
+
+Release builds: `-O2 -DNDEBUG`
+Debug builds: `-g -O0`
+
+C++20 features used: `std::variant`, `std::optional`, designated initializers.
 
 ## Project Structure
 
