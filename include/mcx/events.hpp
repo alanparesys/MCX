@@ -13,9 +13,10 @@ struct Vec3 {
 };
 
 struct Player {
-    std::string id;   // stable identifier (UUID or similar)
-    std::string name; // display / username
+    std::string id;
+    std::string name;
     std::optional<Vec3> position;
+    std::string scene;
 };
 
 enum class EVENT_TYPE {

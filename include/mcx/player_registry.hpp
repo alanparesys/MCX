@@ -1,17 +1,14 @@
 #pragma once
 
+#include "mcx/events.hpp"
+
 #include <map>
 #include <optional>
 #include <string>
 
 namespace mcx {
 
-// Represents a connected player.
-struct Player {
-    std::string id;
-    std::string name;
-    std::string scene; // current scene the player is in
-};
+// Player struct defined in events.hpp
 
 // Tracks all connected players and their state.
 class PlayerRegistry {
