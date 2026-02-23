@@ -1,6 +1,8 @@
 #include "mcx/stats_manager.hpp"
 #include "mcx/log.hpp"
 
+#include <algorithm>
+
 namespace mcx {
 
 void StatsManager::RecordKill(const std::string& playerId) {
