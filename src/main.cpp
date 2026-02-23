@@ -2,8 +2,6 @@
 #include "mcx/events.hpp"
 #include "mcx/action_applier.hpp"
 #include "mcx/log.hpp"
-#include "mcx/signal_handler.hpp"
-#include "mcx/scheduler.hpp"
 
 #include <iostream>
 #include <string>
@@ -11,40 +9,31 @@
 namespace {
 
 void RunDemo() {
-    mcx::RegisterSignalHandler([]() {
-        mcx::log::Info("Shutdown requested...");
-    });
-
     mcx::Config config{};
     config.demoMode = true;
     config.maxPlayers = 2;
 
     mcx::Server server{config};
-    server.Start();
-
+    
     mcx::ActionApplier applier{server.GetSceneManager()};
-    auto& scheduler = server.GetScheduler();
+    auto& threadScheduler = server.GetThreadScheduler();
 
-    mcx::log::Info("Demo run starting");
+    mcx::log::Info("Demo starting - press Ctrl+C to stop");
 
-    scheduler.Schedule(std::chrono::seconds(1), []() {
-        mcx::log::Info("Scheduled: Demo timer fired");
+    threadScheduler.Schedule(std::chrono::seconds(1), []() {
+        mcx::log::Info("Scheduled task executed");
     });
 
     const auto events = mcx::BuildFakeEvents();
     for (const auto& event : events) {
-        if (mcx::ShouldShutdown()) break;
         auto actions = server.HandleEvent(event);
         applier.Apply(actions);
-        scheduler.Update();
-        mcx::log::Info("---");
+        server.Update();
     }
 
-    scheduler.Clear();
-
-    mcx::log::Info("Demo run complete");
-    mcx::log::Info("Events processed: " + 
-        std::to_string(server.GetMetrics().eventsProcessed.load()));
+    mcx::log::Info("Demo complete");
+    mcx::log::Info("Events: " + std::to_string(server.GetMetrics().eventsProcessed.load()));
+    mcx::log::Info("Actions: " + std::to_string(server.GetMetrics().actionsExecuted.load()));
 }
 
 void PrintUsage() {
@@ -52,7 +41,7 @@ void PrintUsage() {
 }
 
 void PrintVersion() {
-    std::cout << "MCX version 0.1.0" << std::endl;
+    std::cout << "MCX Server v0.2.0" << std::endl;
 }
 
 } // namespace
@@ -72,6 +61,12 @@ int main(int argc, char** argv) {
 
     if (arg == "--version") {
         PrintVersion();
+        return 0;
+    }
+
+    if (arg == "--server") {
+        mcx::Server server;
+        server.Run();
         return 0;
     }
 
