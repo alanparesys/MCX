@@ -6,9 +6,8 @@
 
 namespace mcx {
 
-// Simple protocol for MCX <-> Paper plugin communication
 namespace Protocol {
-    constexpr uint8_t MAGIC = 0x4D; // 'M'
+    constexpr uint8_t MAGIC = 0x4D;
     constexpr uint8_t VERSION = 1;
     
     enum class PacketType : uint8_t {
@@ -22,18 +21,11 @@ namespace Protocol {
         ACTION_RESULT = 0x21,
         ERROR = 0xFF
     };
-    
-    struct Header {
-        uint8_t magic = MAGIC;
-        uint8_t version = VERSION;
-        uint8_t type;
-        uint16_t payloadLength;
-    };
 }
 
 struct McxPacket {
     Protocol::PacketType type;
-    std::vector<uint8_t> payload;
+    std::vector<uint8_t> data;
 };
 
 class MCX_API ProtocolHandler {
