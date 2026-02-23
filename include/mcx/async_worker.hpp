@@ -37,8 +37,8 @@ public:
     void Submit(AsyncTask task);
     void SubmitSimple(std::function<void()> work);
     
-    [[nodiscard]] size_t GetPendingCount() const;
-    [[nodiscard]] size_t GetActiveThreads() const;
+    [[nodiscard]] size_t GetPendingCount();
+    [[nodiscard]] size_t GetActiveThreads();
 
 private:
     void WorkerLoop();

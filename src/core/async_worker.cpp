@@ -43,12 +43,12 @@ void AsyncWorker::SubmitSimple(std::function<void()> work) {
     Submit(AsyncTask{"", std::move(work), nullptr, TaskPriority::NORMAL});
 }
 
-size_t AsyncWorker::GetPendingCount() const {
+size_t AsyncWorker::GetPendingCount() {
     std::lock_guard lock(mutex_);
     return tasks_.size();
 }
 
-size_t AsyncWorker::GetActiveThreads() const {
+size_t AsyncWorker::GetActiveThreads() {
     return activeThreads_.load();
 }
 
