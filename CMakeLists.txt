@@ -35,6 +35,11 @@ set(MCX_CORE_SOURCES
     src/core/entity_manager.cpp
     src/core/console.cpp
     src/core/setup_wizard.cpp
+    src/core/ban_manager.cpp
+    src/core/chat_filter.cpp
+    src/core/backup_manager.cpp
+    src/core/http_client.cpp
+    src/core/websocket_server.cpp
     src/integration/paper_bridge.cpp
     src/integration/network_bridge.cpp
     src/integration/fake_event_source.cpp
