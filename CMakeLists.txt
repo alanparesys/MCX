@@ -28,6 +28,7 @@ set(MCX_CORE_SOURCES
     src/core/action_applier.cpp
     src/core/log.cpp
     src/core/event_utils.cpp
+    src/core/script_runtime_dummy.cpp
     src/core/script_runtime_hardcoded.cpp
     src/integration/paper_bridge.cpp
     src/integration/network_bridge.cpp
