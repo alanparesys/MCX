@@ -34,6 +34,7 @@ set(MCX_CORE_SOURCES
     src/core/packet_serializer.cpp
     src/core/entity_manager.cpp
     src/core/console.cpp
+    src/core/setup_wizard.cpp
     src/integration/paper_bridge.cpp
     src/integration/network_bridge.cpp
     src/integration/fake_event_source.cpp

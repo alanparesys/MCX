@@ -4,6 +4,7 @@
 #include "mcx/log.hpp"
 #include "mcx/thread_scheduler.hpp"
 #include "mcx/metrics.hpp"
+#include "mcx/setup_wizard.hpp"
 
 #include <iostream>
 #include <string>
@@ -39,12 +40,30 @@ void RunDemo() {
     mcx::log::Info("Actions: " + std::to_string(server.GetMetrics().actionsExecuted.load()));
 }
 
+void RunSetup() {
+    mcx::SetupWizard wizard;
+    if (wizard.Run()) {
+        std::cout << "\nStarting server...\n";
+        
+        auto cfg = wizard.GetConfig();
+        mcx::Config config{};
+        config.maxPlayers = cfg.maxPlayers;
+        config.backendEndpoint = cfg.bindIp + ":" + std::to_string(cfg.port);
+        
+        mcx::Server server{config};
+        server.Run();
+    }
+}
+
 void PrintUsage() {
-    std::cout << "Usage: mcx [--demo] [--version]" << std::endl;
+    std::cout << "Usage: mcx [--demo] [--setup] [--version]\n";
+    std::cout << "  --demo    Run demo mode\n";
+    std::cout << "  --setup   Interactive server setup\n";
+    std::cout << "  --version Show version\n";
 }
 
 void PrintVersion() {
-    std::cout << "MCX Server v0.2.0" << std::endl;
+    std::cout << "MCX Server v0.2.0\n";
 }
 
 } // namespace
@@ -62,14 +81,13 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    if (arg == "--version") {
-        PrintVersion();
+    if (arg == "--setup") {
+        RunSetup();
         return 0;
     }
 
-    if (arg == "--server") {
-        mcx::Server server;
-        server.Run();
+    if (arg == "--version") {
+        PrintVersion();
         return 0;
     }
 
