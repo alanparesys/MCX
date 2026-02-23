@@ -4,6 +4,7 @@
 #include "mcx/actions.hpp"
 #include "mcx/events.hpp"
 #include <string>
+#include <cstdint>
 
 namespace mcx {
 
