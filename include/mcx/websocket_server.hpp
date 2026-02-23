@@ -45,7 +45,7 @@ private:
     int serverFd_{-1};
     
     std::unordered_set<uint32_t> clients_;
-    std::mutex clientsMutex_;
+    mutable std::mutex clientsMutex_;
     uint32_t nextClientId_{1};
     
     WebSocketMessageHandler onMessage_;
