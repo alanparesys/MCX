@@ -2,9 +2,12 @@
 #include "mcx/events.hpp"
 #include "mcx/action_applier.hpp"
 #include "mcx/log.hpp"
+#include "mcx/thread_scheduler.hpp"
+#include "mcx/metrics.hpp"
 
 #include <iostream>
 #include <string>
+#include <chrono>
 
 namespace {
 
