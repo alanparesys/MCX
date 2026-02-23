@@ -2,7 +2,7 @@
 
 #include "mcx/export.hpp"
 #include <string>
-#include <functional>
+#include <cstdint>
 
 namespace mcx {
 
