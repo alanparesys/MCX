@@ -1,11 +1,17 @@
 #include "mcx/network_bridge.hpp"
 #include "mcx/log.hpp"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
+#endif
 
 namespace mcx {
 
@@ -16,6 +22,10 @@ NetworkBridge::~NetworkBridge() {
 }
 
 void NetworkBridge::Start() {
+#ifdef _WIN32
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
     running_ = true;
     ioThread_ = std::thread(&NetworkBridge::IoLoop, this);
 }
@@ -26,6 +36,9 @@ void NetworkBridge::Stop() {
     if (ioThread_.joinable()) {
         ioThread_.join();
     }
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 bool NetworkBridge::IsConnected() const {
@@ -51,11 +64,17 @@ bool NetworkBridge::Connect() {
     inet_pton(AF_INET, "127.0.0.1", &server.sin_addr);
 
     if (::connect(sock, (struct sockaddr*)&server, sizeof(server)) < 0) {
+#ifdef _WIN32
+        closesocket(sock);
+#else
         close(sock);
+#endif
         return false;
     }
 
+#ifndef _WIN32
     fcntl(sock, F_SETFL, O_NONBLOCK);
+#endif
     connected_.store(true);
     return true;
 }

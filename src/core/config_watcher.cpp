@@ -1,9 +1,13 @@
 #include "mcx/config_watcher.hpp"
 #include "mcx/log.hpp"
 
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <sys/inotify.h>
 #include <unistd.h>
 #include <limits.h>
+#endif
 
 namespace mcx {
 
@@ -30,6 +34,39 @@ void ConfigWatcher::OnChange(ConfigChangeCallback callback) {
     callback_ = std::move(callback);
 }
 
+#ifdef _WIN32
+void ConfigWatcher::WatchLoop() {
+    HANDLE hDir = CreateFileA(
+        filepath_.c_str(),
+        FILE_LIST_DIRECTORY,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        NULL,
+        OPEN_EXISTING,
+        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
+        NULL
+    );
+    
+    if (hDir == INVALID_HANDLE_VALUE) {
+        log::Error("Failed to watch config file");
+        return;
+    }
+    
+    char buffer[1024];
+    DWORD bytesReturned;
+    
+    while (running_) {
+        if (ReadDirectoryChangesW(hDir, buffer, sizeof(buffer), FALSE,
+            FILE_NOTIFY_CHANGE_LAST_WRITE, &bytesReturned, NULL, NULL)) {
+            if (callback_) {
+                callback_();
+            }
+        }
+        Sleep(1000);
+    }
+    
+    CloseHandle(hDir);
+}
+#else
 void ConfigWatcher::WatchLoop() {
     int fd = inotify_init();
     if (fd < 0) {
@@ -63,5 +100,6 @@ void ConfigWatcher::WatchLoop() {
     inotify_rm_watch(fd, wd);
     close(fd);
 }
+#endif
 
 } // namespace mcx

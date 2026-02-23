@@ -1,11 +1,17 @@
 #include "mcx/websocket_server.hpp"
 #include "mcx/log.hpp"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
+#endif
 
 namespace mcx {
 
@@ -16,6 +22,11 @@ WebSocketServer::~WebSocketServer() {
 }
 
 void WebSocketServer::Start() {
+#ifdef _WIN32
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
+
     serverFd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (serverFd_ < 0) {
         log::Error("Failed to create WebSocket server socket");
@@ -23,7 +34,11 @@ void WebSocketServer::Start() {
     }
     
     int opt = 1;
+#ifdef _WIN32
+    setsockopt(serverFd_, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt, sizeof(opt));
+#else
     setsockopt(serverFd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+#endif
     
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
@@ -32,13 +47,21 @@ void WebSocketServer::Start() {
     
     if (bind(serverFd_, (sockaddr*)&addr, sizeof(addr)) < 0) {
         log::Error("Failed to bind WebSocket server");
+#ifdef _WIN32
+        closesocket(serverFd_);
+#else
         close(serverFd_);
+#endif
         return;
     }
     
     if (listen(serverFd_, 10) < 0) {
         log::Error("Failed to listen on WebSocket server");
+#ifdef _WIN32
+        closesocket(serverFd_);
+#else
         close(serverFd_);
+#endif
         return;
     }
     
@@ -50,7 +73,12 @@ void WebSocketServer::Start() {
 void WebSocketServer::Stop() {
     running_ = false;
     if (serverFd_ >= 0) {
+#ifdef _WIN32
+        closesocket(serverFd_);
+        WSACleanup();
+#else
         close(serverFd_);
+#endif
     }
     if (acceptThread_.joinable()) {
         acceptThread_.join();
@@ -73,7 +101,6 @@ void WebSocketServer::OnDisconnect(WebSocketDisconnectHandler handler) {
 }
 
 void WebSocketServer::Send(uint32_t clientId, const std::string& message) {
-    // Simplified - would need client socket mapping
     log::Info("WebSocket send to client " + std::to_string(clientId));
 }
 
@@ -93,7 +120,7 @@ void WebSocketServer::AcceptLoop() {
     while (running_) {
         fd_set readfds;
         FD_ZERO(&readfds);
-        FD_SET(serverFd_, &readfds);
+        FD_SET((unsigned int)serverFd_, &readfds);
         
         timeval timeout{1, 0};
         if (select(serverFd_ + 1, &readfds, nullptr, nullptr, &timeout) > 0) {
@@ -112,9 +139,12 @@ void WebSocketServer::AcceptLoop() {
                     
                     if (onConnect_) onConnect_(clientId);
                     HandleClient(clientFd, clientId);
-                } else {
-                    close(clientFd);
                 }
+#ifdef _WIN32
+                closesocket(clientFd);
+#else
+                close(clientFd);
+#endif
             }
         }
     }
@@ -135,7 +165,6 @@ void WebSocketServer::HandleClient(int clientFd, uint32_t clientId) {
         }
     }
     
-    close(clientFd);
     {
         std::lock_guard lock(clientsMutex_);
         clients_.erase(clientId);
@@ -151,7 +180,6 @@ bool WebSocketServer::PerformHandshake(int clientFd) {
     
     std::string request(buffer, bytes);
     
-    // Extract Sec-WebSocket-Key
     size_t keyStart = request.find("Sec-WebSocket-Key: ");
     if (keyStart == std::string::npos) return false;
     
@@ -160,7 +188,7 @@ bool WebSocketServer::PerformHandshake(int clientFd) {
     std::string key = request.substr(keyStart, keyEnd - keyStart);
     
     // Generate accept key (requires SHA1 + base64 - simplified for now)
-    std::string accept = "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="; // Placeholder
+    std::string accept = "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=";
     
     std::string response = 
         "HTTP/1.1 101 Switching Protocols\r\n"
@@ -169,7 +197,7 @@ bool WebSocketServer::PerformHandshake(int clientFd) {
         "Sec-WebSocket-Accept: " + accept + "\r\n"
         "\r\n";
     
-    send(clientFd, response.c_str(), response.length(), 0);
+    send(clientFd, response.c_str(), static_cast<int>(response.length()), 0);
     return true;
 }
 
@@ -187,7 +215,6 @@ std::string WebSocketServer::DecodeFrame(const std::string& frame) {
         payloadLen = (frame[2] << 8) | frame[3];
         offset = 4;
     } else if (payloadLen == 127) {
-        // 64-bit length
         offset = 10;
     }
     
@@ -211,7 +238,7 @@ std::string WebSocketServer::DecodeFrame(const std::string& frame) {
 
 std::string WebSocketServer::EncodeFrame(const std::string& message) {
     std::string frame;
-    frame += static_cast<char>(0x81); // Text frame, FIN set
+    frame += static_cast<char>(0x81);
     
     if (message.length() < 126) {
         frame += static_cast<char>(message.length());

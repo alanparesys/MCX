@@ -1,12 +1,19 @@
 #include "mcx/http_client.hpp"
 #include "mcx/log.hpp"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <cstring>
+#endif
+
 #include <sstream>
 
 namespace mcx {
@@ -18,6 +25,10 @@ HttpClient::~HttpClient() {
 }
 
 void HttpClient::Start() {
+#ifdef _WIN32
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
     running_ = true;
     worker_ = std::thread(&HttpClient::WorkerLoop, this);
 }
@@ -28,6 +39,9 @@ void HttpClient::Stop() {
     if (worker_.joinable()) {
         worker_.join();
     }
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 void HttpClient::Get(const std::string& url, HttpCallback callback) {
@@ -75,7 +89,6 @@ void HttpClient::WorkerLoop() {
 HttpResponse HttpClient::PerformRequest(const HttpRequest& req) {
     HttpResponse response;
     
-    // Simple HTTP client - parse URL
     size_t protoEnd = req.url.find("://");
     if (protoEnd == std::string::npos) return response;
     
@@ -85,7 +98,6 @@ HttpResponse HttpClient::PerformRequest(const HttpRequest& req) {
     std::string host = req.url.substr(hostStart, pathStart - hostStart);
     std::string path = (pathStart == std::string::npos) ? "/" : req.url.substr(pathStart);
     
-    // Get port
     size_t portSep = host.find(':');
     int port = 80;
     if (portSep != std::string::npos) {
@@ -93,11 +105,13 @@ HttpResponse HttpClient::PerformRequest(const HttpRequest& req) {
         host = host.substr(0, portSep);
     }
     
-    // Resolve host
+#ifdef _WIN32
+    struct hostent* server = gethostbyname(host.c_str());
+#else
     hostent* server = gethostbyname(host.c_str());
+#endif
     if (!server) return response;
     
-    // Create socket
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) return response;
     
@@ -106,12 +120,15 @@ HttpResponse HttpClient::PerformRequest(const HttpRequest& req) {
     serverAddr.sin_port = htons(port);
     memcpy(&serverAddr.sin_addr.s_addr, server->h_addr, server->h_length);
     
-    if (connect(sock, (sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+    if (::connect(sock, (sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+#ifdef _WIN32
+        closesocket(sock);
+#else
         close(sock);
+#endif
         return response;
     }
     
-    // Build request
     std::stringstream httpRequest;
     httpRequest << req.method << " " << path << " HTTP/1.1\r\n";
     httpRequest << "Host: " << host << "\r\n";
@@ -123,19 +140,21 @@ HttpResponse HttpClient::PerformRequest(const HttpRequest& req) {
     httpRequest << req.body;
     
     std::string requestStr = httpRequest.str();
-    send(sock, requestStr.c_str(), requestStr.length(), 0);
+    send(sock, requestStr.c_str(), static_cast<int>(requestStr.length()), 0);
     
-    // Read response
     char buffer[4096];
     std::string responseData;
-    ssize_t bytesRead;
+    int bytesRead;
     while ((bytesRead = recv(sock, buffer, sizeof(buffer) - 1, 0)) > 0) {
         buffer[bytesRead] = '\0';
         responseData += buffer;
     }
+#ifdef _WIN32
+    closesocket(sock);
+#else
     close(sock);
+#endif
     
-    // Parse response
     size_t statusEnd = responseData.find("\r\n");
     if (statusEnd != std::string::npos) {
         std::string statusLine = responseData.substr(0, statusEnd);

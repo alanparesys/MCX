@@ -1,11 +1,17 @@
 #include "mcx/rcon.hpp"
 #include "mcx/log.hpp"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <cstring>
+#endif
 
 namespace mcx {
 
@@ -16,6 +22,11 @@ RconClient::~RconClient() {
 }
 
 bool RconClient::Connect(const std::string& host, uint16_t port) {
+#ifdef _WIN32
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
+
     socketFd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (socketFd_ < 0) return false;
     
@@ -25,7 +36,11 @@ bool RconClient::Connect(const std::string& host, uint16_t port) {
     inet_pton(AF_INET, host.c_str(), &addr.sin_addr);
     
     if (::connect(socketFd_, (sockaddr*)&addr, sizeof(addr)) < 0) {
+#ifdef _WIN32
+        closesocket(socketFd_);
+#else
         close(socketFd_);
+#endif
         socketFd_ = -1;
         return false;
     }
@@ -36,7 +51,12 @@ bool RconClient::Connect(const std::string& host, uint16_t port) {
 
 void RconClient::Disconnect() {
     if (socketFd_ >= 0) {
+#ifdef _WIN32
+        closesocket(socketFd_);
+        WSACleanup();
+#else
         close(socketFd_);
+#endif
         socketFd_ = -1;
     }
     connected_ = false;
@@ -87,14 +107,14 @@ bool RconClient::SendPacket(const RconPacket& packet) {
     data.push_back(0);
     data.push_back(0);
     
-    return send(socketFd_, data.data(), data.size(), 0) == static_cast<ssize_t>(data.size());
+    return send(socketFd_, (const char*)data.data(), data.size(), 0) == static_cast<ssize_t>(data.size());
 }
 
 RconPacket RconClient::ReceivePacket() {
     RconPacket packet{};
     
     uint8_t header[12];
-    if (recv(socketFd_, header, 12, 0) != 12) {
+    if (recv(socketFd_, (char*)header, 12, 0) != 12) {
         return packet;
     }
     
@@ -105,7 +125,7 @@ RconPacket RconClient::ReceivePacket() {
     int payloadLen = packet.length - 8;
     if (payloadLen > 0) {
         std::vector<uint8_t> payload(payloadLen);
-        recv(socketFd_, payload.data(), payloadLen, 0);
+        recv(socketFd_, (char*)payload.data(), payloadLen, 0);
         packet.payload.assign(reinterpret_cast<char*>(payload.data()), payloadLen - 2);
     }
     
@@ -121,11 +141,16 @@ RconServer::~RconServer() {
 }
 
 void RconServer::Start() {
+#ifdef _WIN32
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
+
     serverFd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (serverFd_ < 0) return;
     
     int opt = 1;
-    setsockopt(serverFd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    setsockopt(serverFd_, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt, sizeof(opt));
     
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
@@ -133,7 +158,11 @@ void RconServer::Start() {
     addr.sin_port = htons(port_);
     
     if (bind(serverFd_, (sockaddr*)&addr, sizeof(addr)) < 0) {
+#ifdef _WIN32
+        closesocket(serverFd_);
+#else
         close(serverFd_);
+#endif
         return;
     }
     
@@ -147,7 +176,12 @@ void RconServer::Start() {
 void RconServer::Stop() {
     running_ = false;
     if (serverFd_ >= 0) {
+#ifdef _WIN32
+        closesocket(serverFd_);
+        WSACleanup();
+#else
         close(serverFd_);
+#endif
     }
     if (acceptThread_.joinable()) {
         acceptThread_.join();
@@ -166,7 +200,7 @@ void RconServer::AcceptLoop() {
     while (running_) {
         fd_set readfds;
         FD_ZERO(&readfds);
-        FD_SET(serverFd_, &readfds);
+        FD_SET((unsigned int)serverFd_, &readfds);
         
         timeval timeout{1, 0};
         if (select(serverFd_ + 1, &readfds, nullptr, nullptr, &timeout) > 0) {
@@ -176,20 +210,22 @@ void RconServer::AcceptLoop() {
             
             if (clientFd >= 0) {
                 HandleClient(clientFd);
+#ifdef _WIN32
+                closesocket(clientFd);
+#else
                 close(clientFd);
+#endif
             }
         }
     }
 }
 
 void RconServer::HandleClient(int clientFd) {
-    // Simplified RCON handler
     log::Info("RCON client connected");
     
     char buffer[1024];
     ssize_t len = recv(clientFd, buffer, sizeof(buffer), 0);
     if (len > 0 && commandHandler_) {
-        // Parse and execute command
         commandHandler_("help");
     }
 }
