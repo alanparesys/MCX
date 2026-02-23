@@ -40,6 +40,12 @@ set(MCX_CORE_SOURCES
     src/core/backup_manager.cpp
     src/core/http_client.cpp
     src/core/websocket_server.cpp
+    src/core/world_manager.cpp
+    src/core/economy_manager.cpp
+    src/core/teleport_manager.cpp
+    src/core/stats_manager.cpp
+    src/core/async_worker.cpp
+    src/core/kit_manager.cpp
     src/integration/paper_bridge.cpp
     src/integration/network_bridge.cpp
     src/integration/fake_event_source.cpp
