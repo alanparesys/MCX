@@ -1,7 +1,7 @@
 # MCX – Positioning and Scope
 
 MCX is an open-source platform that sits **on top of Minecraft servers**. It is not a replacement for the game, but a
-layer that makes it easier to build and run rich, AI-powered experiences.
+layer that makes it easier to build and run rich, scripted experiences.
 
 This document clarifies what MCX is, what it is not, and how it positions itself among existing tools.
 
@@ -60,12 +60,12 @@ MCX is built so that it can send events to other systems and receive structured 
 
 ## Long-term vision in one paragraph
 
-MCX wants to be the place where **Minecraft, scripting, and AI meet**. It is a toolbox for building experiences rather
+MCX wants to be the place where **Minecraft meets scripting and external services**. It is a toolbox for building experiences rather
 than a single mode or minigame. Over time, the goal is for MCX to provide:
 
 - a stable event and action model,
 - a well-designed scripting API (starting with Lua),
-- integrations with AI backends,
+- integrations with external services,
 - and a strong documentation story,
 
 so that other developers and creators can build serious, long-lived projects on top of it.

@@ -82,7 +82,7 @@ sufficient:
   - event type (`player_join`, `chat`, etc.),
   - relevant fields (player, message, scene, etc.),
   - optional context.
-- OpenClaw returns a response that MCX can translate into actions:
+- External backend returns a response that MCX can translate into actions:
   - send a message,
   - broadcast something,
   - log a suggestion for the admin.

@@ -80,11 +80,11 @@ scripts:
 MCX does not need to support this full richness in early versions, but the concept of **named scenes that bundle
 configuration and behavior** is important from the start.
 
-## Scenes and AI
+## Scenes and External Tooling
 
-Scenes are also a useful hook for AI integration:
+Scenes are also a useful hook for external tooling:
 
-- An AI assistant can help design or adjust scenes:
+- External tools can help design or adjust scenes:
   - propose rules and roles for a given theme,
   - suggest spawn locations or basic flows.
 - MCX can send scene context to an external service when asking for help:
