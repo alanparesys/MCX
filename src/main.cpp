@@ -62,6 +62,23 @@ void PrintUsage() {
     std::cout << "  --version Show version\n";
 }
 
+void PrintBanner() {
+    std::cout << R"(
+    _..._
+  .'     '.
+ |  __ __  |
+ | |  |  | |
+ | |  |  | |  ___  ___ ___ ___
+ | |  |  | | / __|/ __/ __/ __|
+ | |  |  | || (__| (__\__ \__ \
+ | |  |  | | \___|\___|___/___/
+ |.|  |  |.|
+ '..'  '..'
+  ||    ||
+  ''    ''
+)" << std::endl;
+}
+
 void PrintVersion() {
     std::cout << "MCX Server v0.2.0\n";
 }
@@ -69,6 +86,8 @@ void PrintVersion() {
 } // namespace
 
 int main(int argc, char** argv) {
+    PrintBanner();
+    
     if (argc <= 1) {
         PrintUsage();
         return 0;
