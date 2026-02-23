@@ -10,12 +10,11 @@ if(BUILD_SHARED_LIBS)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-find_package(Lua REQUIRED)
+find_package(Lua QUIET)
 find_package(Threads REQUIRED)
 
-add_library(mcx_core
+set(MCX_CORE_SOURCES
     src/core/server.cpp
-    src/core/lua_runtime.cpp
     src/core/module_loader.cpp
     src/core/thread_scheduler.cpp
     src/core/scene_manager.cpp
@@ -36,21 +35,32 @@ add_library(mcx_core
     src/integration/minecraft_bridge_dummy.cpp
 )
 
+if(LUA_FOUND)
+    list(APPEND MCX_CORE_SOURCES src/core/lua_runtime.cpp)
+    message(STATUS "Lua found - enabling Lua runtime")
+else()
+    message(STATUS "Lua not found - Lua runtime disabled")
+endif()
+
+add_library(mcx_core ${MCX_CORE_SOURCES})
+
 target_include_directories(mcx_core
     PUBLIC 
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
-    PRIVATE
-        ${LUA_INCLUDE_DIR}
 )
+
+if(LUA_FOUND)
+    target_include_directories(mcx_core PRIVATE ${LUA_INCLUDE_DIR})
+    target_link_libraries(mcx_core PRIVATE ${LUA_LIBRARIES})
+    target_compile_definitions(mcx_core PRIVATE MCX_HAS_LUA)
+endif()
 
 target_compile_definitions(mcx_core PRIVATE MCX_CORE_EXPORTS)
 
 target_link_libraries(mcx_core
     PUBLIC
         Threads::Threads
-    PRIVATE
-        ${LUA_LIBRARIES}
 )
 
 add_executable(mcx_server src/main.cpp)
@@ -61,3 +71,12 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/modules)
 
 add_executable(mcx_tests tests/test_core.cpp)
 target_link_libraries(mcx_tests PRIVATE mcx_core)
+
+# Sample module
+add_library(sample_module SHARED examples/modules/sample_module.cpp)
+target_link_libraries(sample_module PRIVATE mcx_core)
+set_target_properties(sample_module PROPERTIES
+    PREFIX ""
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/modules
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/modules
+)

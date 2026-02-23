@@ -7,8 +7,12 @@
 #include "mcx/metrics.hpp"
 #include "mcx/permissions.hpp"
 #include "mcx/module_loader.hpp"
-#include "mcx/lua_runtime.hpp"
+#include "mcx/script_runtime.hpp"
 #include "mcx/signal_handler.hpp"
+
+#ifdef MCX_HAS_LUA
+#include "mcx/lua_runtime.hpp"
+#endif
 
 #include <filesystem>
 #include <thread>
@@ -17,7 +21,11 @@ namespace mcx {
 
 Server::Server(Config config)
     : config_(std::move(config)) {
+#ifdef MCX_HAS_LUA
     scriptRuntime_ = CreateLuaRuntime();
+#else
+    scriptRuntime_ = std::make_unique<DummyScriptRuntime>();
+#endif
     sceneManager_ = std::make_unique<SceneManager>();
     playerRegistry_ = std::make_unique<PlayerRegistry>();
     scheduler_ = std::make_unique<Scheduler>();
