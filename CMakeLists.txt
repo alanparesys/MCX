@@ -46,6 +46,8 @@ set(MCX_CORE_SOURCES
     src/core/stats_manager.cpp
     src/core/async_worker.cpp
     src/core/kit_manager.cpp
+    src/core/rcon.cpp
+    src/core/protocol.cpp
     src/integration/paper_bridge.cpp
     src/integration/network_bridge.cpp
     src/integration/fake_event_source.cpp
