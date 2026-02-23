@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <thread>
+#include <atomic>
 
 namespace mcx {
 

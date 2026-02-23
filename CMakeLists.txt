@@ -28,6 +28,12 @@ set(MCX_CORE_SOURCES
     src/core/event_utils.cpp
     src/core/script_runtime_dummy.cpp
     src/core/script_runtime_hardcoded.cpp
+    src/core/event_bus.cpp
+    src/core/command_registry.cpp
+    src/core/config_watcher.cpp
+    src/core/packet_serializer.cpp
+    src/core/entity_manager.cpp
+    src/core/console.cpp
     src/integration/paper_bridge.cpp
     src/integration/network_bridge.cpp
     src/integration/fake_event_source.cpp
