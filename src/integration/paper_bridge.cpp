@@ -71,7 +71,7 @@ void PaperBridge::Listen() {
             int clientFd = accept(serverFd, nullptr, nullptr);
             if (clientFd >= 0) {
                 char buffer[1024]{};
-                read(clientFd, buffer, sizeof(buffer));
+                [[maybe_unused]] auto _ = read(clientFd, buffer, sizeof(buffer));
                 if (eventCallback_) {
                     eventCallback_(buffer);
                 }
