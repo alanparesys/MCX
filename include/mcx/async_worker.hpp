@@ -7,6 +7,9 @@
 #include <unordered_map>
 #include <queue>
 #include <mutex>
+#include <condition_variable>
+#include <thread>
+#include <atomic>
 
 namespace mcx {
 
