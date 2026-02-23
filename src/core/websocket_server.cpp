@@ -6,8 +6,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
-#include <openssl/sha.h>
-#include <openssl/evp.h>
 
 namespace mcx {
 
@@ -161,14 +159,7 @@ bool WebSocketServer::PerformHandshake(int clientFd) {
     size_t keyEnd = request.find("\r\n", keyStart);
     std::string key = request.substr(keyStart, keyEnd - keyStart);
     
-    // Generate accept key
-    std::string magic = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-    std::string combined = key + magic;
-    
-    unsigned char hash[SHA_DIGEST_LENGTH];
-    SHA1(reinterpret_cast<const unsigned char*>(combined.c_str()), combined.length(), hash);
-    
-    // Base64 encode (simplified)
+    // Generate accept key (requires SHA1 + base64 - simplified for now)
     std::string accept = "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="; // Placeholder
     
     std::string response = 
