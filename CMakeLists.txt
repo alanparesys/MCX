@@ -3,10 +3,20 @@ project(MCX LANGUAGES CXX VERSION 0.2.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# Platform-specific settings
+if(WIN32)
+    # Windows-specific settings
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    add_definitions(-DNOMINMAX -DWIN32_LEAN_AND_MEAN)
+    set(CMAKE_CXX_VISIBILITY_PRESET default)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN NO)
+else()
+    # Linux/Unix settings
+    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
 
 find_package(Lua QUIET)
 find_package(Threads REQUIRED)
@@ -82,6 +92,11 @@ target_link_libraries(mcx_core
         Threads::Threads
 )
 
+# Windows-specific libraries
+if(WIN32)
+    target_link_libraries(mcx_core PUBLIC ws2_32 wsock32)
+endif()
+
 add_executable(mcx_server src/main.cpp)
 target_link_libraries(mcx_server PRIVATE mcx_core)
 set_target_properties(mcx_server PROPERTIES OUTPUT_NAME "mcx")
@@ -94,8 +109,16 @@ target_link_libraries(mcx_tests PRIVATE mcx_core)
 # Sample module
 add_library(sample_module SHARED examples/modules/sample_module.cpp)
 target_link_libraries(sample_module PRIVATE mcx_core)
-set_target_properties(sample_module PROPERTIES
-    PREFIX ""
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/modules
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/modules
-)
+
+if(WIN32)
+    set_target_properties(sample_module PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/modules
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/modules
+    )
+else()
+    set_target_properties(sample_module PROPERTIES
+        PREFIX ""
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/modules
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/modules
+    )
+endif()

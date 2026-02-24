@@ -55,8 +55,8 @@ cmake .. && make -j$(nproc)
 
 | Version | Linux | Windows | macOS | Lua | Status |
 |---------|-------|---------|-------|-----|--------|
-| v0.1.0 | ✅ x64 | ❌ | ❌ | Optional | Stable |
-| v0.2.0 | ✅ x64 | ✅ x64 | ❌ | Built-in | Planned |
+| v0.1.0 | ✅ x64 | ✅ x64 | ❌ | Optional | Stable |
+| v0.2.0 | ✅ x64 | ✅ x64 | ❌ | Built-in | In Progress |
 | v0.3.0 | ✅ x64/ARM | ✅ x64 | ❌ | Built-in | Planned |
 
 ## Release Cycle
