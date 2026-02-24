@@ -13,3 +13,8 @@ Makefile
 # OS files
 .DS_Store
 Thumbs.db
+# Build directories
+build/
+build-win/
+release/
+release-win/
