@@ -1,4 +1,5 @@
 #include "mcx/protocol.hpp"
+#include <cstdint>
 #include <cstring>
 
 namespace mcx {
