@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mcx/export.hpp"
+#include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>

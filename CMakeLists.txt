@@ -71,7 +71,14 @@ else()
     message(STATUS "Lua not found - Lua runtime disabled")
 endif()
 
-add_library(mcx_core ${MCX_CORE_SOURCES})
+if(WIN32 AND BUILD_SHARED_LIBS)
+    add_library(mcx_core SHARED ${MCX_CORE_SOURCES})
+else()
+    add_library(mcx_core STATIC ${MCX_CORE_SOURCES})
+    if(WIN32)
+        target_compile_definitions(mcx_core PUBLIC MCX_STATIC)
+    endif()
+endif()
 
 target_include_directories(mcx_core
     PUBLIC 
@@ -100,6 +107,12 @@ endif()
 add_executable(mcx_server src/main.cpp)
 target_link_libraries(mcx_server PRIVATE mcx_core)
 set_target_properties(mcx_server PROPERTIES OUTPUT_NAME "mcx")
+
+if(WIN32)
+    set_target_properties(mcx_server PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+endif()
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/modules)
 
