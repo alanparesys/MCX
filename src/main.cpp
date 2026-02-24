@@ -5,6 +5,7 @@
 #include "mcx/thread_scheduler.hpp"
 #include "mcx/metrics.hpp"
 #include "mcx/setup_wizard.hpp"
+#include "mcx/update_checker.hpp"
 
 #include <iostream>
 #include <string>
@@ -54,10 +55,11 @@ void RunSetup() {
 }
 
 void PrintUsage() {
-    std::cout << "Usage: mcx [--demo] [--setup] [--version]\n";
+    std::cout << "Usage: mcx [--demo] [--setup] [--version] [--update]\n";
     std::cout << "  --demo    Run demo mode\n";
     std::cout << "  --setup   Interactive server setup\n";
     std::cout << "  --version Show version\n";
+    std::cout << "  --update  Check for updates\n";
 }
 
 void PrintBanner() {
@@ -77,14 +79,68 @@ void PrintBanner() {
 )" << std::endl;
 }
 
+constexpr const char* MCX_VERSION = "v0.2.0";
+
 void PrintVersion() {
-    std::cout << "MCX Server v0.2.0\n";
+    std::cout << "MCX Server " << MCX_VERSION << "\n";
+}
+
+void CheckForUpdates() {
+    std::cout << "\nChecking for updates...\n";
+    
+    mcx::UpdateChecker checker;
+    checker.OnUpdateAvailable([](const mcx::ReleaseInfo& info) {
+        std::cout << "\n";
+        std::cout << "╔════════════════════════════════════════════════╗\n";
+        std::cout << "║  UPDATE AVAILABLE                              ║\n";
+        std::cout << "╠════════════════════════════════════════════════╣\n";
+        std::cout << "║  Current:  " << MCX_VERSION << "\n";
+        std::cout << "║  Latest:   " << info.version << "\n";
+        std::cout << "╠════════════════════════════════════════════════╣\n";
+        std::cout << "║  Download: " << info.downloadUrl << "\n";
+        std::cout << "╚════════════════════════════════════════════════╝\n";
+        std::cout << "\nWould you like to download? (y/n): ";
+        
+        char response;
+        std::cin >> response;
+        if (response == 'y' || response == 'Y') {
+            std::cout << "\nOpening browser to download page...\n";
+            std::cout << "Please download and extract the new version.\n";
+            #ifdef _WIN32
+                system(("start "" \"" + info.downloadUrl + "\"").c_str());
+            #else
+                system(("xdg-open \"" + info.downloadUrl + "\"").c_str());
+            #endif
+        }
+    });
+    
+    checker.CheckForUpdates(MCX_VERSION);
 }
 
 } // namespace
 
 int main(int argc, char** argv) {
     PrintBanner();
+    
+    // Check for updates on every run (unless --version or specific flags)
+    bool skipUpdateCheck = false;
+    if (argc > 1) {
+        std::string firstArg = argv[1];
+        if (firstArg == "--version" || firstArg == "--update") {
+            skipUpdateCheck = true;
+        }
+    }
+    
+    if (!skipUpdateCheck && argc <= 1) {
+        // Interactive mode - ask about updates
+        std::cout << "\nCurrent version: " << MCX_VERSION << "\n";
+        std::cout << "Check for updates? (y/n): ";
+        char response;
+        std::cin >> response;
+        if (response == 'y' || response == 'Y') {
+            CheckForUpdates();
+        }
+    }
     
     if (argc <= 1) {
         PrintUsage();
@@ -105,6 +161,11 @@ int main(int argc, char** argv) {
 
     if (arg == "--version") {
         PrintVersion();
+        return 0;
+    }
+    
+    if (arg == "--update") {
+        CheckForUpdates();
         return 0;
     }
 
