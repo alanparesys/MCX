@@ -2,6 +2,20 @@
 
 Minecraft C++ Experience Layer. A server-side scripting platform for Minecraft that enables custom game modes and experiences without client modifications.
 
+[![Release](https://img.shields.io/github/v/release/alanparesys/MCX)](https://github.com/alanparesys/MCX/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+## 🚀 Quick Start
+
+```bash
+# Download latest release (Linux x64)
+curl -L -o mcx.tar.gz https://github.com/alanparesys/MCX/releases/latest/download/mcx-v0.1.0-linux-x64.tar.gz
+tar xzvf mcx.tar.gz
+./mcx --setup
+```
+
+📦 **[View All Releases](https://github.com/alanparesys/MCX/releases)** | 📋 **[Release Notes](RELEASES.md)**
+
 ## Features
 
 - Event-driven architecture (player join/quit, chat, commands, scene transitions)
