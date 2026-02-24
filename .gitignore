@@ -18,3 +18,5 @@ build/
 build-win/
 release/
 release-win/
+*.tar.gz
+*.zip
