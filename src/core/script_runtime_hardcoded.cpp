@@ -1,7 +1,5 @@
-#include "mcx/script_runtime.hpp"
+#include "mcx/script_runtime_hardcoded.hpp"
 #include "mcx/log.hpp"
-
-#include <iostream>
 
 namespace mcx {
 

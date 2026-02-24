@@ -17,16 +17,14 @@ void RunDemo() {
     config.demoMode = true;
     config.maxPlayers = 2;
 
+    // Use hardcoded runtime for demo responses
     mcx::Server server{config};
     
     mcx::ActionApplier applier{server.GetSceneManager()};
     auto& threadScheduler = server.GetThreadScheduler();
 
     mcx::log::Info("Demo starting - press Ctrl+C to stop");
-
-    threadScheduler.Schedule(std::chrono::seconds(1), []() {
-        mcx::log::Info("Scheduled task executed");
-    });
+    mcx::log::Info("Try commands: !hello, !scene test");
 
     const auto events = mcx::BuildFakeEvents();
     for (const auto& event : events) {
