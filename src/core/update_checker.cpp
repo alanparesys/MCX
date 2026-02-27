@@ -5,6 +5,69 @@
 #include <sstream>
 #include <thread>
 #include <cstdlib>
+#include <vector>
+
+namespace {
+
+std::vector<int> ParseVersionParts(std::string version) {
+    if (!version.empty() && (version[0] == 'v' || version[0] == 'V')) {
+        version.erase(version.begin());
+    }
+
+    std::vector<int> parts;
+    std::stringstream ss(version);
+    std::string token;
+    while (std::getline(ss, token, '.')) {
+        try {
+            parts.push_back(std::stoi(token));
+        } catch (...) {
+            parts.push_back(0);
+        }
+    }
+    return parts;
+}
+
+bool IsVersionNewer(const std::string& candidate, const std::string& current) {
+    auto a = ParseVersionParts(candidate);
+    auto b = ParseVersionParts(current);
+    const size_t n = std::max(a.size(), b.size());
+    a.resize(n, 0);
+    b.resize(n, 0);
+
+    for (size_t i = 0; i < n; ++i) {
+        if (a[i] > b[i]) return true;
+        if (a[i] < b[i]) return false;
+    }
+    return false;
+}
+
+std::string PickPreferredAssetUrl(const std::string& json) {
+    std::vector<std::string> urls;
+    size_t pos = 0;
+    const std::string key = "\"browser_download_url\":\"";
+
+    while ((pos = json.find(key, pos)) != std::string::npos) {
+        size_t start = pos + key.size();
+        size_t end = json.find("\"", start);
+        if (end == std::string::npos) break;
+        urls.push_back(json.substr(start, end - start));
+        pos = end + 1;
+    }
+
+#if defined(_WIN32)
+    for (const auto& u : urls) {
+        if (u.find("windows") != std::string::npos && u.find(".zip") != std::string::npos) return u;
+    }
+#elif defined(__linux__)
+    for (const auto& u : urls) {
+        if (u.find("linux") != std::string::npos && (u.find(".tar.gz") != std::string::npos || u.find(".tgz") != std::string::npos)) return u;
+    }
+#endif
+
+    return urls.empty() ? std::string{} : urls.front();
+}
+
+} // namespace
 
 namespace mcx {
 
@@ -19,16 +82,15 @@ void UpdateChecker::CheckForUpdates(const std::string& currentVersion) {
         if (response.success && response.statusCode == 200) {
             auto info = ParseGitHubResponse(response.body);
             
-            // Simple version comparison (v0.1.0 vs v0.1.1)
-            if (info.version > currentVersion) {
-                info.updateAvailable = true;
+            info.updateAvailable = IsVersionNewer(info.version, currentVersion);
+            if (info.updateAvailable) {
                 log::Info("Update available: " + info.version + " (current: " + currentVersion + ")");
-                
-                if (callback_) {
-                    callback_(info);
-                }
             } else {
                 log::Info("MCX is up to date (" + currentVersion + ")");
+            }
+
+            if (callback_) {
+                callback_(info);
             }
         } else {
             log::Warn("Could not check for updates (status: " + std::to_string(response.statusCode) + ")");
@@ -77,14 +139,7 @@ ReleaseInfo UpdateChecker::ParseGitHubResponse(const std::string& json) {
         }
     }
     
-    size_t urlPos = json.find("\"browser_download_url\":\"");
-    if (urlPos != std::string::npos) {
-        size_t start = urlPos + 26;
-        size_t end = json.find("\"", start);
-        if (end != std::string::npos) {
-            info.downloadUrl = json.substr(start, end - start);
-        }
-    }
+    info.downloadUrl = PickPreferredAssetUrl(json);
     
     size_t bodyPos = json.find("\"body\":\"");
     if (bodyPos != std::string::npos) {
