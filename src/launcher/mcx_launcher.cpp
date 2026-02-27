@@ -48,6 +48,15 @@ MCXLauncher::MCXLauncher(QWidget *parent)
     setWindowTitle("MCX Server Launcher - " + currentVersion_);
     resize(1024, 768);
     
+    updateChecker_->OnUpdateAvailable([this](const mcx::ReleaseInfo& info) {
+        QMetaObject::invokeMethod(this, [this, info]() {
+            const QString resolvedVersion = info.updateAvailable
+                ? QString::fromStdString(info.version)
+                : currentVersion_;
+            onUpdateAvailable(resolvedVersion, QString::fromStdString(info.downloadUrl));
+        }, Qt::QueuedConnection);
+    });
+
     // Start update check on launch
     QTimer::singleShot(1000, this, &MCXLauncher::startUpdateCheck);
 }
@@ -347,25 +356,21 @@ void MCXLauncher::onCheckUpdate() {
     statusLabel_->setText("Checking for updates...");
     progressBar_->setVisible(true);
     progressBar_->setRange(0, 0); // Indeterminate
-    
-    // Run update check in background
-    QThread::create([this]() {
+    updateButton_->setEnabled(false);
+
+    QThread* worker = QThread::create([this]() {
         updateChecker_->CheckForUpdates(currentVersion_.toStdString());
-    })->start();
-    
-    // Simulate progress for UX
-    int progress = 0;
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, [this, timer, &progress]() {
-        progress += 10;
-        if (progress >= 100) {
-            timer->stop();
-            timer->deleteLater();
-            progressBar_->setVisible(false);
-            statusLabel_->setText("Ready");
-        }
     });
-    timer->start(100);
+
+    connect(worker, &QThread::finished, this, [this, worker]() {
+        progressBar_->setVisible(false);
+        progressBar_->setRange(0, 100);
+        statusLabel_->setText("Ready");
+        updateButton_->setEnabled(true);
+        worker->deleteLater();
+    });
+
+    worker->start();
 }
 
 void MCXLauncher::onServerOutput() {
